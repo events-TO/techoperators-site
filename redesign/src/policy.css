@@ -1,1 +1,13 @@
 /* ---------- operating policy page (shared rules in legal.css) ---------- */
+
+/* terms and conditions: legal clause numbering 1, 2 ... and 3.1, 3.2 ... */
+.clauses,.clauses ol{list-style:none;margin:0;padding:0}
+.clauses{counter-reset:c1;display:flex;flex-direction:column}
+.clauses > li{counter-increment:c1;display:grid;grid-template-columns:36px minmax(0,1fr);gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.clauses > li::before{content:counter(c1);font-size:13px;font-weight:600;color:var(--muted);line-height:2.3;font-variant-numeric:tabular-nums}
+.clauses > li > ol{grid-column:2;counter-reset:c2;display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.clauses > li > ol > li{counter-increment:c2;display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px}
+.clauses > li > ol > li::before{content:counter(c1) "." counter(c2);font-size:13px;font-weight:600;color:var(--muted);line-height:2.3;font-variant-numeric:tabular-nums}
+@media (max-width:560px){
+  .clauses > li > ol{grid-column:1/-1}
+}
