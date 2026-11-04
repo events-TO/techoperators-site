@@ -28,37 +28,19 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
 <style>
   :root {
-    --ground: #112E23; --ground-2: #0D251C; --ink: #EFF6FA; --ink-2: #C9D6D8; --muted: #9DB0B0;
-    --surface: rgba(239, 246, 250, 0.055); --surface-2: rgba(239, 246, 250, 0.10);
-    --field: rgba(13, 37, 28, 0.6);
-    --line: rgba(239, 246, 250, 0.14); --line-strong: rgba(239, 246, 250, 0.28);
-    --accent: #81E76D; --accent-ink: #112E23; --accent-soft: rgba(129, 231, 109, 0.16);
-    --cta: #FF8732; --cta-ink: #112E23;
-    --warn: #FFC15E; --warn-soft: rgba(255, 193, 94, 0.16);
-    --chip: rgba(239, 246, 250, 0.09); --chip-on: #81E76D; --chip-on-ink: #112E23;
-    --shadow: 0 18px 50px rgba(0, 0, 0, 0.35); --focus: #81E76D; --radius: 22px;
-    --font: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  }
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ground: #F2F7F4; --ground-2: #E8F0EB; --ink: #112E23; --ink-2: #2E4A3F; --muted: #5F7072;
-      --surface: #FFFFFF; --surface-2: #F3F8F5; --field: #FFFFFF; --line: rgba(17, 46, 35, 0.12); --line-strong: rgba(17, 46, 35, 0.28);
-      --accent: #2E9E43; --accent-ink: #FFFFFF; --accent-soft: rgba(129, 231, 109, 0.28);
-      --warn: #B36B00; --warn-soft: rgba(255, 193, 94, 0.25);
-      --chip: rgba(17, 46, 35, 0.07); --chip-on: #112E23; --chip-on-ink: #EFF6FA;
-      --shadow: 0 18px 50px rgba(17, 46, 35, 0.14); --focus: #112E23;
-    }
-  }
-  :root[data-theme="light"] {
-    --ground: #F2F7F4; --ground-2: #E8F0EB; --ink: #112E23; --ink-2: #2E4A3F; --muted: #5F7072;
-    --surface: #FFFFFF; --surface-2: #F3F8F5; --field: #FFFFFF; --line: rgba(17, 46, 35, 0.12); --line-strong: rgba(17, 46, 35, 0.28);
-    --accent: #2E9E43; --accent-ink: #FFFFFF; --accent-soft: rgba(129, 231, 109, 0.28);
-    --warn: #B36B00; --warn-soft: rgba(255, 193, 94, 0.25);
-    --chip: rgba(17, 46, 35, 0.07); --chip-on: #112E23; --chip-on-ink: #EFF6FA;
-    --shadow: 0 18px 50px rgba(17, 46, 35, 0.14); --focus: #112E23;
+    /* new website palette (home page :root): light only */
+    --ground: #FBFCFA; --ground-2: #EFF6FA; --ink: #112E23; --ink-2: #3B4F4A; --muted: #56686A;
+    --surface: #FFFFFF; --surface-2: #EFF6FA; --field: #FFFFFF;
+    --line: rgba(17, 46, 35, 0.10); --line-strong: rgba(17, 46, 35, 0.22);
+    --accent: #81E76D; --accent-ink: #112E23; --accent-soft: rgba(129, 231, 109, 0.30);
+    --cta: #112E23; --cta-ink: #FFFFFF;
+    --warn: #B36B00; --warn-soft: rgba(255, 193, 94, 0.28);
+    --chip: rgba(17, 46, 35, 0.06); --chip-on: #112E23; --chip-on-ink: #FFFFFF;
+    --shadow: 0 18px 50px rgba(17, 46, 35, 0.12); --focus: #112E23; --radius: 22px;
+    --font: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   }
   * { box-sizing: border-box; }
-  html { color-scheme: dark light; }
+  html { color-scheme: light; }
   body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; letter-spacing: 0.01em; -webkit-font-smoothing: antialiased; }
   a { color: inherit; }
   button, input, textarea, select { font: inherit; color: inherit; letter-spacing: inherit; }
@@ -373,6 +355,8 @@
   .dlg { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, .45); display: grid; place-items: center; padding: 16px; }
   .dlg .box { width: min(100%, 560px); background: var(--ground-2); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 24px; display: grid; gap: 14px; box-shadow: var(--shadow); }
   :root:not([data-theme="dark"]) .dlg .box { background: var(--surface); }
+/* photo placeholder was squashed (span had no box): give it its real size */
+.ph { display: inline-block; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .dlg .box { background: var(--ground-2); } }
   :root[data-theme="dark"] .dlg .box { background: var(--ground-2); }
   .dlg h2 { margin: 0; font-size: 18px; }
@@ -385,13 +369,40 @@
 label.switch:has(#available) { display: none; }
 .avail.off { display: none; }
 </style>
+<style>
+/* ---------- new website look ---------- */
+.top { background: color-mix(in srgb, var(--ground) 88%, transparent); }
+.top-in { max-width: 1280px; min-height: 76px; padding-inline: clamp(16px, 5vw, 80px); }
+.brand img.wm { width: auto; height: 34px; }
+.wrap, .savebar .in { max-width: 1280px; padding-inline: clamp(16px, 5vw, 80px); }
+.card { border-radius: 28px; padding: clamp(28px, 4vw, 44px); box-shadow: var(--shadow); gap: 20px; }
+.card h1 { font-size: clamp(30px, 3.4vw, 40px); letter-spacing: -0.02em; line-height: 1.08; }
+.card h1 em { color: inherit; position: relative; z-index: 0; white-space: nowrap; }
+.card h1 em::before { content: ""; position: absolute; z-index: -1; left: -.06em; right: -.06em; bottom: .08em; height: .34em; border-radius: .1em; background: rgba(129,231,109,.62); }
+.card p { font-size: 16px; line-height: 1.6; }
+.btn { height: 48px; padding: 0 24px; font-size: 15px; }
+.btn.cta:hover { filter: none; background: #0B2219; }
+.btn.ghost { background: var(--surface); }
+.btn.link { color: var(--ink); font-weight: 600; }
+.field label, .lbl-txt { letter-spacing: 0.09em; }
+.field input, .field textarea, .field select { border-color: var(--line-strong); }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(129,231,109,.35); }
+.section { border-radius: 24px; padding: clamp(20px, 2.4vw, 28px); }
+.section h2 { font-size: 19px; }
+.ed-head h1 { font-size: clamp(32px, 4vw, 48px); letter-spacing: -0.02em; }
+/* accent green is for small signals only: text that used it becomes ink */
+.next-step .k, .next-step .g, .kpi.good .v { color: var(--ink); }
+.strength.top { border-color: var(--line-strong); }
+.dlg .box { background: var(--surface); }
+.mail, .next-step { background: var(--surface-2) !important; }
+</style>
 </head>
 <body>
 
 
 <header class="top">
   <div class="top-in">
-    <a class="brand" href="/" aria-label="Tech Operators home"><img src="/mark.png" alt=""><span>tech operators.</span></a>
+    <a class="brand" href="/" aria-label="Tech Operators home"><img class="wm" src="/img/logo-dark.png" alt="tech operators." width="300" height="71"></a>
     <div class="who" id="who" hidden><span class="lbl">Signed in as <b id="whoName"></b></span><button type="button" id="signout">Sign out</button></div>
   </div>
 </header>
