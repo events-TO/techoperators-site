@@ -80,15 +80,73 @@ export default async (req: Request) => {
     },
   });
 
-  // 4. Optional list entry
+  // 4. List entry, with each answer in its own column (Founder Inbound / TO Members).
+  //    Column slugs below must match the list's attributes in Attio exactly.
   const list = form === "founder-application" ? Netlify.env.get("ATTIO_FOUNDER_LIST") : Netlify.env.get("ATTIO_MEMBER_LIST");
   if (list && personId) {
+    const values = form === "founder-application" ? founderValues(d, submittedOn(payload)) : memberValues(d, submittedOn(payload));
     try {
       await attio(`/lists/${list}/entries`, "PUT", {
-        data: { parent_record_id: personId, parent_object: "people", entry_values: {} },
+        data: { parent_record_id: personId, parent_object: "people", entry_values: values },
       });
-    } catch (e) { console.warn("List entry failed", e); }
+    } catch (e) {
+      // A bad value (e.g. a choice Attio doesn't have) rejects the whole entry; retry empty so the
+      // applicant still lands in the list. The note above already holds every answer.
+      console.warn("List entry with values failed, retrying without values", e);
+      try {
+        await attio(`/lists/${list}/entries`, "PUT", {
+          data: { parent_record_id: personId, parent_object: "people", entry_values: {} },
+        });
+      } catch (e2) { console.warn("List entry failed", e2); }
+    }
   }
 
   return new Response("ok");
 };
+
+// ---- Form answer -> Attio list column mapping ----
+
+// Netlify sends ticked checkboxes as an array or a comma-separated string depending on the form.
+function many(v: unknown): string[] {
+  if (Array.isArray(v)) return v.map(String).map((x) => x.trim()).filter(Boolean);
+  return typeof v === "string" && v.trim() ? v.split(",").map((x) => x.trim()).filter(Boolean) : [];
+}
+const text = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+const ticked = (v: unknown) => many(v).length > 0;
+const submittedOn = (p: any) => String(p?.created_at || new Date().toISOString()).slice(0, 10);
+
+// Drop empty answers so we never blank out a column someone filled in by hand.
+function clean(o: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(o).filter(([, v]) => v !== "" && !(Array.isArray(v) && v.length === 0)));
+}
+
+// Founder Inbound
+function founderValues(d: Record<string, any>, date: string) {
+  return clean({
+    stage: "New Inbound",
+    form_submitted_date: date,
+    form_interested_in: text(d.help_type) ? [text(d.help_type)] : [],
+    // "Form: Your startup" (column was renamed in Attio, so its internal name is the old one)
+    i_m_raising_and_would_like_to_pitch_to_tech_operators_members: text(d.startup),
+    form_website: text(d.website),
+    form_link_to_deck: text(d.deck_url),
+    form_investment_stage: text(d.stage),
+    form_underrepresented_founder: text(d.under_represented),
+    form_marketing_consent: ticked(d.newsletter),
+  });
+}
+
+// TO Members
+function memberValues(d: Record<string, any>, date: string) {
+  return clean({
+    member_status_4: "New Inbound",
+    form_submission_date: date,
+    form_linkedin_profile: text(d.linkedin),
+    form_what_prompted_you_to_apply: many(d.motivation),
+    form_have_you_angel_invested_in_the_past: text(d.angel_before),
+    form_are_you_a_member_of_hban: text(d.hban_member),
+    form_how_much_would_you_like_to_invest_in_the_next_three_years: text(d.investment_intent),
+    form_message: text(d.message),
+    form_accepts_marketing: ticked(d.newsletter),
+  });
+}
